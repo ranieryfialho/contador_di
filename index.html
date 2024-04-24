@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contador Diablo Immortal</title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+  header, footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    z-index: 100;
+  }
+  header {
+    top: 0;
+    left: 0;
+  }
+  footer {
+    bottom: 0;
+    left: 0;
+    justify-content: center;
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+  }
+  .input-group input {
+    margin-right: 10px;
+  }
+  #personagens {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 70px;
+    padding-bottom: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 140px); /* Ajustado para acomodar footer */
+  }
+  .secao {
+    flex: 1 1 20%;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    min-width: 300px;
+    max-width: 400px;
+    box-sizing: border-box;
+  }
+  .contador, .contador-title {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+  .titulo {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  button {
+    font-size: 20px;
+    padding: 10px 20px;
+    margin-top: 10px;
+  }
+  .dark-mode {
+    background-color: #333;
+    color: #f0f0f0;
+  }
+  .dark-mode .secao {
+    background-color: #555;
+    color: #f0f0f0;
+    border-color: #888;
+  }
+  button.dark-mode-toggle {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  input[type="number"] {
+    margin-left: 5px;
+    width: 60px;
+  }
+  span {
+    font-size: 16px;
+    margin-left: 10px;
+  }
+  footer span {
+    text-align: center;
+    font-size: 12px;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="input-group">
+    <input type="text" id="nomePersonagem" placeholder="Nome do Personagem">
+    <button onclick="adicionarPersonagem()">Adicionar Personagem</button>
+  </div>
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">Modo Escuro</button>
+</header>
+
+<div id="personagens"></div> <!-- Local para os personagens e contadores -->
+
+<footer>
+  <span>© 2024 Raniery Fialho - <a href="https://ranieryfialho.github.io/linktree/" target="_blank">Visite meu Linktree</a></span>
+</footer>
+
+<script>
+let personagemId = 0;
+
+function adicionarPersonagem() {
+  const nomePersonagem = document.getElementById('nomePersonagem').value.trim();
+  if (!nomePersonagem) {
+    alert('Por favor, digite o nome do personagem.');
+    return;
+  }
+  document.getElementById('nomePersonagem').value = "";
+  criarPersonagem(nomePersonagem);
+}
+
+function criarPersonagem(nomePersonagem, valores = null) {
+  const secaoPersonagem = document.createElement('div');
+  secaoPersonagem.classList.add('secao');
+  const localPersonagemId = personagemId;
+  secaoPersonagem.dataset.id = localPersonagemId;
+  secaoPersonagem.innerHTML = `
+    <div class="titulo">${nomePersonagem}</div>
+    <progress id="progresso${localPersonagemId}" value="0" max="161"></progress>
+    <span id="percentual${localPersonagemId}">0%</span>
+    <div>
+      <div class="contador-title">Fenda</div>
+      <div class="contador" id="fenda${localPersonagemId}" data-meta="35">${valores ? valores.fenda : '0'}/35</div>
+      <button onclick="incrementar('fenda${localPersonagemId}', 35, ${localPersonagemId})">+1</button>
+      <button onclick="zerar('fenda${localPersonagemId}', ${localPersonagemId})">Zerar</button>
+    </div>
+    <div>
+      <div class="contador-title">Covil</div>
+      <div class="contador" id="covil${localPersonagemId}" data-meta="21">${valores ? valores.covil : '0'}/21</div>
+      <button onclick="incrementar('covil${localPersonagemId}', 21, ${localPersonagemId})">+1</button>
+      <button onclick="zerar('covil${localPersonagemId}', ${localPersonagemId})">Zerar</button>
+    </div>
+    <div>
+      <div class="contador-title">DG's</div>
+      <div class="contador" id="dg${localPersonagemId}" data-meta="${valores ? valores.dgMeta : '21'}">${valores ? valores.dg : '0'}/${valores ? valores.dgMeta : '21'}</div>
+      <input type="number" id="dgMeta${localPersonagemId}" value="${valores ? valores.dgMeta : '21'}" min="1">
+      <button onclick="incrementar('dg${localPersonagemId}', document.getElementById('dgMeta${localPersonagemId}').value, ${localPersonagemId})">+1</button>
+      <button onclick="zerar('dg${localPersonagemId}', ${localPersonagemId})">Zerar</button>
+      <button onclick="salvarMeta('dgMeta${localPersonagemId}', 'dg${localPersonagemId}', ${localPersonagemId})">Salvar Meta</button>
+    </div>
+    <div>
+      <div class="contador-title">Gemas</div>
+      <div class="contador" id="gema${localPersonagemId}" data-meta="84">${valores ? valores.gema : '0'}/84</div>
+      <button onclick="incrementar('gema${localPersonagemId}', 84, ${localPersonagemId})">+1</button>
+      <button onclick="zerar('gema${localPersonagemId}', ${localPersonagemId})">Zerar</button>
+    </div>
+    <button onclick="excluirPersonagem(this.parentNode, '${nomePersonagem}')" style="background-color: red; color: white;">Excluir Personagem</button>
+  `;
+  document.getElementById('personagens').appendChild(secaoPersonagem);
+  personagemId++;
+  salvarDados();
+  atualizarProgresso(localPersonagemId);
+}
+
+function salvarMeta(inputId, contadorId, personagemId) {
+  const novaMeta = document.getElementById(inputId).value;
+  const contador = document.getElementById(contadorId);
+  const valoresAtuais = contador.innerText.split('/');
+  contador.dataset.meta = novaMeta;
+  contador.innerText = valoresAtuais[0] + '/' + novaMeta;
+  salvarDados();
+  atualizarProgresso(personagemId);
+}
+
+function atualizarProgresso(personagemId) {
+  const secao = document.querySelector(`[data-id='${personagemId}']`);
+  const progresso = document.getElementById(`progresso${personagemId}`);
+  let somaAtual = 0;
+  let somaMaxima = 0;
+
+  secao.querySelectorAll('.contador').forEach(elemento => {
+    const valorAtual = parseInt(elemento.innerText.split('/')[0]);
+    const valorMaximo = parseInt(elemento.dataset.meta);
+    somaAtual += valorAtual;
+    somaMaxima += valorMaximo;
+  });
+
+  const percentual = Math.round((somaAtual / somaMaxima) * 100);
+  progresso.value = somaAtual;
+  progresso.max = somaMaxima;
+  document.getElementById(`percentual${personagemId}`).innerText = percentual + '%';
+}
+
+function incrementar(contadorId, meta, personagemId) {
+  var elemento = document.getElementById(contadorId);
+  var valores = elemento.innerText.split('/');
+  var valorAtual = parseInt(valores[0]);
+  if (valorAtual < meta) {
+    valorAtual++;
+    elemento.innerText = valorAtual + '/' + meta;
+    salvarDados();
+    atualizarProgresso(personagemId);
+  }
+}
+
+function zerar(contadorId, personagemId) {
+  var elemento = document.getElementById(contadorId);
+  var meta = elemento.dataset.meta;
+  elemento.innerText = '0/' + meta;
+  salvarDados();
+  atualizarProgresso(personagemId);
+}
+
+function excluirPersonagem(elemento, nomePersonagem) {
+  let personagemId = elemento.dataset.id;
+  document.getElementById('personagens').removeChild(elemento);
+  let dados = JSON.parse(localStorage.getItem('personagens')) || {};
+  delete dados[nomePersonagem];
+  localStorage.setItem('personagens', JSON.stringify(dados));
+}
+
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+}
+
+function salvarDados() {
+  let dados = {};
+  document.querySelectorAll('.secao').forEach(secao => {
+    const nome = secao.querySelector('.titulo').innerText;
+    const id = secao.dataset.id;
+    dados[nome] = {
+      fenda: document.getElementById(`fenda${id}`).innerText.split('/')[0],
+      covil: document.getElementById(`covil${id}`).innerText.split('/')[0],
+      dg: document.getElementById(`dg${id}`).innerText.split('/')[0],
+      gema: document.getElementById(`gema${id}`).innerText.split('/')[0],
+      dgMeta: document.getElementById(`dgMeta${id}`).value // Salvando a meta customizada
+    };
+  });
+  localStorage.setItem('personagens', JSON.stringify(dados));
+}
+
+window.onload = function() {
+  const dadosCarregados = JSON.parse(localStorage.getItem('personagens'));
+  if (dadosCarregados) {
+    Object.keys(dadosCarregados).forEach(nome => {
+      criarPersonagem(nome, dadosCarregados[nome]);
+    });
+  }
+  personagemId = document.querySelectorAll('.secao').length; // Ajusta o ID após carregamento
+};
+</script>
+</body>
+</html>
