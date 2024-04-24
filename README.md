@@ -23,7 +23,8 @@ Não é necessária nenhuma configuração especial para executar o projeto. Bas
 ```bash
 git clone https://github.com/seu-usuario/seu-repositorio
 cd seu-repositorio
-open index.html # ou use qualquer navegador de sua escolha
+open index.html # ou use qualquer navegador de sua escolha 
+```
 
 ## Contribuições
 
